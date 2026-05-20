@@ -12,7 +12,8 @@ public class UserUsage {
 
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
         try (SessionFactory sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory()) {
-            var userRepository = new UserRepository(sessionFactory);
+            var crudRepository = new CrudRepository(sessionFactory);
+            var userRepository = new UserRepository(crudRepository);
             var user = new User();
             user.setLogin("admin");
             user.setPassword("admin");

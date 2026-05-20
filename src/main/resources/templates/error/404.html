@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navigation :: navigation}"></div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+
+            <h1 class="display-1 text-danger">404</h1>
+
+            <h2 class="mb-4">Страница не найдена</h2>
+
+            <p class="lead mb-4" th:text="${error}">
+                Запрошенный ресурс не найден.
+            </p>
+
+            <a href="/" class="btn btn-dark">Вернуться на главную страницу</a>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>
