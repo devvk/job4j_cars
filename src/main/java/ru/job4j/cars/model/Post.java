@@ -36,6 +36,6 @@ public class Post {
     private List<User> participates = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "car_id", nullable = false)
+    @JoinColumn(name = "car_id")
     private Car car;
 }

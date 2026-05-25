@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset devvk:009_ddl_create_history_table
+--changeset devvk:010_ddl_create_history_table
 CREATE TABLE history
 (
     id       SERIAL PRIMARY KEY,
