@@ -25,7 +25,6 @@ public class PostRepository {
         );
     }
 
-    // TODO Post.photo???
     public List<Post> findAllWithPhoto() {
         return crudRepository.query(
                 """
@@ -36,11 +35,11 @@ public class PostRepository {
         );
     }
 
-    public List<Post> findAllByName(String brand) {
+    public List<Post> findAllByBrand(String brand) {
         return crudRepository.query(
                 """
                         FROM Post
-                        WHERE car.name = :brand
+                        WHERE car.brand.name = :brand
                         """,
                 Post.class,
                 Map.of("brand", brand)

@@ -17,9 +17,10 @@ public class Post {
     private Integer id;
 
     private String description;
+    private String photo;
     private LocalDateTime created;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -27,7 +28,7 @@ public class Post {
     @JoinColumn(name = "post_id")
     private List<PriceHistory> priceHistory = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "participates",
             joinColumns = {@JoinColumn(name = "post_id")},
@@ -35,7 +36,7 @@ public class Post {
     )
     private List<User> participates = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id")
     private Car car;
 }

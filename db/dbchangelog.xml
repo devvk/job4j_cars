@@ -14,4 +14,6 @@
     <include file="scripts/009_ddl_create_history_owners_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/010_ddl_create_history_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/011_ddl_add_car_id_to_posts_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/012_ddl_add_photo_to_posts_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/013_ddl_create_brands_table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
