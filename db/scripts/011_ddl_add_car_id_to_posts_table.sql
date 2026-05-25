@@ -4,4 +4,4 @@
 ALTER TABLE posts
     ADD COLUMN car_id INT REFERENCES cars (id);
 
---rollback ALTER TABLE post DROP COLUMN car_id;
+--rollback ALTER TABLE posts DROP COLUMN car_id;
