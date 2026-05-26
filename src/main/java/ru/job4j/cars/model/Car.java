@@ -17,8 +17,8 @@ public class Car {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "engine_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "engine_id", nullable = false)
     private Engine engine;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -28,8 +28,4 @@ public class Car {
             inverseJoinColumns = @JoinColumn(name = "owner_id")
     )
     private Set<Owner> owners = new HashSet<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
 }

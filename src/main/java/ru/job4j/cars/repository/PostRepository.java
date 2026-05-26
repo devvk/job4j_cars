@@ -3,10 +3,12 @@ package ru.job4j.cars.repository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.Post;
+import ru.job4j.cars.repository.command.CrudRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
@@ -14,11 +16,66 @@ public class PostRepository {
 
     private final CrudRepository crudRepository;
 
+    public Post create(Post post) {
+        crudRepository.run(session -> session.persist(post));
+        return post;
+    }
+
+    public void update(Post post) {
+        crudRepository.run(session -> session.merge(post));
+    }
+
+    public void delete(Integer postId) {
+        crudRepository.run(session -> {
+            var post = session.find(Post.class, postId);
+            if (post != null) {
+                session.remove(post);
+            }
+        });
+    }
+
+    public List<Post> findAllOrderedById() {
+        return crudRepository.query(
+                """
+                        SELECT DISTINCT p
+                        FROM Post p
+                        JOIN FETCH p.user
+                        JOIN FETCH p.car c
+                        JOIN FETCH c.engine
+                        LEFT JOIN FETCH p.photos
+                        ORDER BY p.id ASC
+                        """,
+                Post.class
+        );
+    }
+
+    public Optional<Post> findById(Integer postId) {
+        return crudRepository.optional(
+                """
+                        SELECT DISTINCT p
+                        FROM Post p
+                        JOIN FETCH p.user
+                        JOIN FETCH p.car c
+                        JOIN FETCH c.engine
+                        LEFT JOIN FETCH p.photos
+                        WHERE p.id = :id
+                        """,
+                Post.class,
+                Map.of("id", postId)
+        );
+    }
+
     public List<Post> findAllCreatedLastDay() {
         return crudRepository.query(
                 """
-                        FROM Post
+                        SELECT DISTINCT p
+                        FROM Post p
+                        JOIN FETCH p.user
+                        JOIN FETCH p.car c
+                        JOIN FETCH c.engine
+                        LEFT JOIN FETCH p.photos
                         WHERE created >= :date
+                        ORDER BY p.created DESC
                         """,
                 Post.class,
                 Map.of("date", LocalDateTime.now().minusDays(1))
@@ -28,21 +85,32 @@ public class PostRepository {
     public List<Post> findAllWithPhoto() {
         return crudRepository.query(
                 """
-                        FROM Post
-                        WHERE photo IS NOT NULL
+                        SELECT DISTINCT p
+                        FROM Post p
+                        JOIN FETCH p.user
+                        JOIN FETCH p.car c
+                        JOIN FETCH c.engine
+                        JOIN FETCH p.photos
+                        ORDER BY p.created DESC
                         """,
                 Post.class
         );
     }
 
-    public List<Post> findAllByBrand(String brand) {
+    public List<Post> findAllByCarName(String carName) {
         return crudRepository.query(
                 """
-                        FROM Post
-                        WHERE car.brand.name = :brand
+                        SELECT DISTINCT p
+                        FROM Post p
+                        JOIN FETCH p.user
+                        JOIN FETCH p.car c
+                        JOIN FETCH c.engine
+                        LEFT JOIN FETCH p.photos
+                        WHERE c.name = :name
+                        ORDER BY p.created DESC
                         """,
                 Post.class,
-                Map.of("brand", brand)
+                Map.of("name", carName)
         );
     }
 }

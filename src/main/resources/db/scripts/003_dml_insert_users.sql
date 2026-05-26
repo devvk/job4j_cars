@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset devvk:003_dml_insert
+--changeset devvk:003_dml_insert_users
 INSERT INTO users (login, password)
 VALUES ('ivanov', 'password');
 INSERT INTO users (login, password)

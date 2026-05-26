@@ -6,14 +6,13 @@
     <include file="scripts/001_ddl_create_users_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/002_ddl_create_posts_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/003_dml_insert_users.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/004_ddl_add_table_price_history.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/005_ddl_create_participates_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/004_ddl_create_table_price_history.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/005_ddl_create_post_subscribers_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/006_ddl_create_engines_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/007_ddl_create_cars_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/008_ddl_create_owners_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/009_ddl_create_history_owners_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/010_ddl_create_history_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/011_ddl_add_car_id_to_posts_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/012_ddl_add_photo_to_posts_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/013_ddl_create_brands_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/011_ddl_alter_posts_add_car_id.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/012_ddl_create_photos_table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

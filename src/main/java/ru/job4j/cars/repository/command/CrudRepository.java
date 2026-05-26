@@ -1,4 +1,4 @@
-package ru.job4j.cars.repository;
+package ru.job4j.cars.repository.command;
 
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;

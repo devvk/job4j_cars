@@ -4,8 +4,8 @@
 CREATE TABLE history
 (
     id       SERIAL PRIMARY KEY,
-    start_at TIMESTAMP NOT NULL,
-    end_at   TIMESTAMP NOT NULL
+    start_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_at   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 --rollback DROP TABLE history;
