@@ -69,7 +69,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    public void whenCreateSeveralUthenFindAllOrderById() {
+    public void whenCreateSeveralUserFindAllOrderById() {
         var user1 = userRepository.create(createUser("user1"));
         var user2 = userRepository.create(createUser("user2"));
         var result = userRepository.findAllOrderById();
