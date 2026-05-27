@@ -15,4 +15,9 @@
     <include file="scripts/010_ddl_create_history_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/011_ddl_alter_posts_add_car_id.sql" relativeToChangelogFile="true"/>
     <include file="scripts/012_ddl_create_photos_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/013_ddl_alter_posts_add_sold.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/014_ddl_create_brands_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/015_dml_insert_brands.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/016_ddl_alter_cars_add_brand_and_body_type.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/017_dml_insert_engines.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

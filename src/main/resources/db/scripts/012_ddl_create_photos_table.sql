@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset devvk:010_ddl_create_photos_table
+--changeset devvk:012_ddl_create_photos_table
 CREATE TABLE photos
 (
     id      SERIAL PRIMARY KEY,

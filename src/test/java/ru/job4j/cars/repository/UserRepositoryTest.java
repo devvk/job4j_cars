@@ -60,18 +60,17 @@ class UserRepositoryTest {
 
     @Test
     void whenCreateThenFindSameUserById() {
-        var user = userRepository.create(createUser("user"));
-        var result = userRepository.findById(user.getId());
+        var savedUser = userRepository.save(createUser("user")).orElseThrow();
+        var foundUser = userRepository.findById(savedUser.getId()).orElseThrow();
 
-        assertThat(result).isPresent();
-        assertThat(result).get().extracting(User::getLogin).isEqualTo(user.getLogin());
-        assertThat(result).get().extracting(User::getPassword).isEqualTo(user.getPassword());
+        assertThat(foundUser.getLogin()).isEqualTo(savedUser.getLogin());
+        assertThat(foundUser.getPassword()).isEqualTo(savedUser.getPassword());
     }
 
     @Test
     public void whenCreateSeveralUserFindAllOrderById() {
-        var user1 = userRepository.create(createUser("user1"));
-        var user2 = userRepository.create(createUser("user2"));
+        var user1 = userRepository.save(createUser("user1")).orElseThrow();
+        var user2 = userRepository.save(createUser("user2")).orElseThrow();
         var result = userRepository.findAllOrderById();
 
         assertThat(result)
@@ -81,7 +80,7 @@ class UserRepositoryTest {
 
     @Test
     void whenUpdateThenFindUpdatedUser() {
-        var user = userRepository.create(createUser("user"));
+        var user = userRepository.save(createUser("user")).orElseThrow();
         user.setLogin("updated");
         user.setPassword("updated");
         userRepository.update(user);
@@ -94,7 +93,7 @@ class UserRepositoryTest {
 
     @Test
     void whenDeleteThenFindByIdReturnEmpty() {
-        var user = userRepository.create(createUser("user"));
+        var user = userRepository.save(createUser("user")).orElseThrow();
         userRepository.delete(user.getId());
         var result = userRepository.findById(user.getId());
 
@@ -103,9 +102,9 @@ class UserRepositoryTest {
 
     @Test
     void whenFindByLikeLoginThenReturnMatchedUser() {
-        var user1 = userRepository.create(createUser("user1"));
-        var user2 = userRepository.create(createUser("user2"));
-        userRepository.create(createUser("not found"));
+        var user1 = userRepository.save(createUser("user1")).orElseThrow();
+        var user2 = userRepository.save(createUser("user2")).orElseThrow();
+        userRepository.save(createUser("not found"));
         var result = userRepository.findByLikeLogin("user");
 
         assertThat(result)
@@ -115,7 +114,7 @@ class UserRepositoryTest {
 
     @Test
     void whenFindByLoginThenReturnSameUser() {
-        var user = userRepository.create(createUser("user"));
+        var user = userRepository.save(createUser("user")).orElseThrow();
         var result = userRepository.findByLogin(user.getLogin());
 
         assertThat(result).isPresent();

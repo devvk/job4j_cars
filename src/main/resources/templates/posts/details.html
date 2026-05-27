@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navigation :: navigation}"></div>
+
+<div class="container mt-4">
+
+    <h1 th:text="${(post.car.brand != null ? post.car.brand.name : '') + ' ' + post.car.model}">
+        Марка Модель
+    </h1>
+
+    <p class="text-muted"
+       th:text="${#temporals.format(post.created, 'dd.MM.yyyy HH:mm')}">
+    </p>
+
+    <p>
+        <span th:if="${post.sold}"
+              class="badge text-bg-success">
+            Продано
+        </span>
+
+        <span th:unless="${post.sold}"
+              class="badge text-bg-warning">
+            Активно
+        </span>
+    </p>
+
+    <div class="mb-4">
+
+        <img th:each="photo : ${post.photos}"
+             th:src="@{/files/{id}(id=${photo.id})}"
+             width="300"
+             class="me-2 mb-2 border rounded" alt="Photo">
+    </div>
+
+    <table class="table table-bordered">
+
+        <tbody>
+
+        <tr>
+            <th>ID</th>
+            <td th:text="${post.id}"></td>
+        </tr>
+
+        <tr>
+            <th>Марка</th>
+            <td th:text="${post.car.brand != null ? post.car.brand.name : '-'}"></td>
+        </tr>
+
+        <tr>
+            <th>Модель</th>
+            <td th:text="${post.car.model}"></td>
+        </tr>
+
+        <tr>
+            <th>Тип кузова</th>
+            <td th:text="${post.car.bodyType != null ? post.car.bodyType : '-'}"></td>
+        </tr>
+
+        <tr>
+            <th>Двигатель</th>
+            <td th:text="${post.car.engine.name}"></td>
+        </tr>
+
+        <tr>
+            <th>Автор</th>
+            <td th:text="${post.user.login}"></td>
+        </tr>
+
+        <tr>
+            <th>Описание</th>
+            <td th:text="${post.description}"></td>
+        </tr>
+
+        </tbody>
+
+    </table>
+
+    <div class="d-flex gap-2">
+
+        <a href="/posts" class="btn btn-secondary">
+            Назад
+        </a>
+
+        <a th:if="${session.user != null && session.user.id == post.user.id}"
+           th:href="@{/posts/edit/{id}(id=${post.id})}"
+           class="btn btn-primary">
+            Редактировать
+        </a>
+
+        <form th:if="${session.user != null && session.user.id == post.user.id}"
+              th:action="@{/posts/delete/{id}(id=${post.id})}"
+              method="post">
+
+            <button type="submit" class="btn btn-danger">
+                Удалить
+            </button>
+
+        </form>
+
+        <form th:if="${session.user != null
+                      && session.user.id == post.user.id
+                      && !post.sold}"
+              th:action="@{/posts/sold/{id}(id=${post.id})}"
+              method="post">
+
+            <button type="submit" class="btn btn-success">
+                Продано
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

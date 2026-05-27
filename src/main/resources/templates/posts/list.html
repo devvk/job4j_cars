@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navigation :: navigation}"></div>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Объявления</h1>
+
+        <a class="btn btn-primary" href="/posts/create">
+            Добавить объявление
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle">
+
+        <thead class="table-light">
+        <tr>
+            <th>Фото</th>
+            <th>Марка</th>
+            <th>Модель</th>
+            <th>Тип кузова</th>
+            <th>Описание</th>
+            <th>Дата</th>
+            <th>Статус</th>
+            <th>Автор</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="post : ${posts}">
+            <td>
+                <a th:href="@{/posts/{id}(id=${post.id})}">
+                    <img th:if="${!post.photos.isEmpty()}"
+                         th:src="@{/files/{id}(id=${post.photos.get(0).id})}"
+                         width="120"
+                         class="me-2 mb-2 border rounded" alt="Photo">
+                </a>
+            </td>
+            <td>
+                <a th:href="@{/posts/{id}(id=${post.id})}"
+                   th:text="${post.car.brand.name}">
+                </a>
+            </td>
+            <td th:text="${post.car.model}">
+            </td>
+            <td th:text="${post.car.bodyType != null ? post.car.bodyType : '-'}"></td>
+            <td th:text="${post.description}"></td>
+            <td th:text="${#temporals.format(post.created, 'dd.MM.yyyy HH:mm')}"></td>
+            <td>
+        <span th:if="${post.sold}" class="badge text-bg-success">
+            Продано
+        </span>
+                <span th:unless="${post.sold}" class="badge text-bg-warning">
+            Активно
+        </span>
+            </td>
+            <td th:text="${post.user.login}"></td>
+
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

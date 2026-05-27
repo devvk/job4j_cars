@@ -67,7 +67,7 @@ class CarRepositoryTest {
         var result = carRepository.findById(car.getId());
 
         assertThat(result).isPresent();
-        assertThat(result.get().getName()).isEqualTo(car.getName());
+        assertThat(result.get().getModel()).isEqualTo(car.getModel());
         assertThat(result.get().getEngine()).isEqualTo(car.getEngine());
     }
 
@@ -77,18 +77,18 @@ class CarRepositoryTest {
         carRepository.create(createCar("BMW", "V10"));
         var result = carRepository.findAllOrderById();
 
-        assertThat(result).extracting(Car::getName).containsExactly("Mercedes", "BMW");
+        assertThat(result).extracting(Car::getModel).containsExactly("Mercedes", "BMW");
     }
 
     @Test
     void whenUpdateThenFindUpdatedCarById() {
         var car = carRepository.create(createCar("Mercedes", "V8"));
-        car.setName("Mercedes Updated");
+        car.setModel("Mercedes Updated");
         carRepository.update(car);
         var result = carRepository.findById(car.getId());
 
         assertThat(result).isPresent();
-        assertThat(result.get().getName()).isEqualTo(car.getName());
+        assertThat(result.get().getModel()).isEqualTo(car.getModel());
     }
 
     @Test
@@ -106,7 +106,7 @@ class CarRepositoryTest {
         carRepository.create(createCar("BMW", "V10"));
         var result = carRepository.findByEngineId(car1.getEngine().getId());
 
-        assertThat(result).extracting(Car::getName).containsExactly(car1.getName());
+        assertThat(result).extracting(Car::getModel).containsExactly(car1.getModel());
     }
 
     private Car createCar(String carName, String engineName) {
@@ -115,7 +115,7 @@ class CarRepositoryTest {
         engineRepository.create(engine);
 
         var car = new Car();
-        car.setName(carName);
+        car.setModel(carName);
         car.setEngine(engine);
         return car;
     }

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navigation :: navigation}"></div>
+
+<div class="container mt-4">
+
+    <h1 class="mb-4">Редактировать объявление</h1>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/posts/edit/{id}(id=${post.id})}"
+          th:object="${post}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label for="brandId" class="form-label">Марка</label>
+            <select class="form-select" id="brandId" name="brandId" required>
+                <option th:each="brand : ${brands}"
+                        th:value="${brand.id}"
+                        th:text="${brand.name}"
+                        th:selected="${post.car.brand != null && brand.id == post.car.brand.id}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="model" class="form-label">Модель</label>
+            <input type="text"
+                   class="form-control"
+                   id="model"
+                   th:field="*{car.model}"
+                   required>
+        </div>
+
+        <div class="mb-3">
+            <label for="bodyType" class="form-label">Тип кузова</label>
+            <select class="form-select"
+                    id="bodyType"
+                    th:field="*{car.bodyType}"
+                    required>
+                <option value="Седан">Седан</option>
+                <option value="Хэтчбек">Хэтчбек</option>
+                <option value="Универсал">Универсал</option>
+                <option value="Лифтбек">Лифтбек</option>
+                <option value="Купе">Купе</option>
+                <option value="Кабриолет">Кабриолет</option>
+                <option value="Внедорожник">Внедорожник</option>
+                <option value="Кроссовер">Кроссовер</option>
+                <option value="Пикап">Пикап</option>
+                <option value="Минивэн">Минивэн</option>
+                <option value="Лимузин">Лимузин</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="engineId" class="form-label">Двигатель</label>
+            <select class="form-select" id="engineId" name="engineId" required>
+                <option th:each="engine : ${engines}"
+                        th:value="${engine.id}"
+                        th:text="${engine.name}"
+                        th:selected="${post.car.engine != null && engine.id == post.car.engine.id}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Описание</label>
+            <textarea class="form-control"
+                      id="description"
+                      th:field="*{description}"
+                      rows="5"
+                      required>
+            </textarea>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="sold"
+                   th:field="*{sold}">
+            <label class="form-check-label" for="sold">
+                Продано
+            </label>
+        </div>
+
+        <div class="mb-3">
+            <label for="file" class="form-label">Добавить фотографию</label>
+            <input type="file"
+                   class="form-control"
+                   id="file"
+                   name="file"
+                   accept="image/*">
+        </div>
+
+        <a th:href="@{/posts/{id}(id=${post.id})}"
+           class="btn btn-secondary">
+            Отмена
+        </a>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Сохранить
+        </button>
+
+    </form>
+
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

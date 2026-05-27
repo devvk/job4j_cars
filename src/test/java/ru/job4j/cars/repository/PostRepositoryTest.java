@@ -77,7 +77,7 @@ class PostRepositoryTest {
         assertThat(result).isPresent();
         assertThat(result).get().extracting(Post::getDescription).isEqualTo(post.getDescription());
         assertThat(result).get().extracting(p -> post.getUser().getLogin()).isEqualTo("Mercedes_user");
-        assertThat(result).get().extracting(p -> post.getCar().getName()).isEqualTo(post.getCar().getName());
+        assertThat(result).get().extracting(p -> post.getCar().getModel()).isEqualTo(post.getCar().getModel());
         assertThat(result).get().extracting(p -> post.getCar().getEngine().getName()).isEqualTo("Mercedes_engine");
     }
 
@@ -101,7 +101,7 @@ class PostRepositoryTest {
 
         assertThat(result)
                 .extracting(Post::getDescription)
-                .containsExactly(post1.getDescription(), post2.getDescription());
+                .containsExactly(post2.getDescription(), post1.getDescription());
     }
 
     @Test
@@ -155,7 +155,7 @@ class PostRepositoryTest {
     void whenFindAllByCarNameThenReturnOnlyPostsWithSameCarName() {
         postRepository.create(createPost("Mercedes", "Mercedes description"));
         var car = postRepository.create(createPost("BMW", "BMW description"));
-        var result = postRepository.findAllByCarName("BMW");
+        var result = postRepository.findAllByCarModel("BMW");
 
         assertThat(result)
                 .extracting(Post::getDescription)
@@ -168,14 +168,14 @@ class PostRepositoryTest {
         engineRepository.create(engine);
 
         var car = new Car();
-        car.setName(carName);
+        car.setModel(carName);
         car.setEngine(engine);
         carRepository.create(car);
 
         var user = new User();
         user.setLogin(carName + "_user");
         user.setPassword("password");
-        userRepository.create(user);
+        userRepository.save(user);
 
         var post = new Post();
         post.setDescription(description);

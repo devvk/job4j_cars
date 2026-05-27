@@ -7,12 +7,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "owners")
+@Table(name = "brands")
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
-public class Owner {
+public class Brand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,11 +20,6 @@ public class Owner {
     @ToString.Include
     private Integer id;
 
-    @Column(nullable = false)
     @ToString.Include
     private String name;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
 }

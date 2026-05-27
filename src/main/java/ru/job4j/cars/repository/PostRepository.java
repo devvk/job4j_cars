@@ -41,9 +41,10 @@ public class PostRepository {
                         FROM Post p
                         JOIN FETCH p.user
                         JOIN FETCH p.car c
+                        LEFT JOIN FETCH c.brand
                         JOIN FETCH c.engine
                         LEFT JOIN FETCH p.photos
-                        ORDER BY p.id ASC
+                        ORDER BY p.id DESC
                         """,
                 Post.class
         );
@@ -56,6 +57,7 @@ public class PostRepository {
                         FROM Post p
                         JOIN FETCH p.user
                         JOIN FETCH p.car c
+                        LEFT JOIN FETCH c.brand
                         JOIN FETCH c.engine
                         LEFT JOIN FETCH p.photos
                         WHERE p.id = :id
@@ -72,6 +74,7 @@ public class PostRepository {
                         FROM Post p
                         JOIN FETCH p.user
                         JOIN FETCH p.car c
+                        LEFT JOIN FETCH c.brand
                         JOIN FETCH c.engine
                         LEFT JOIN FETCH p.photos
                         WHERE created >= :date
@@ -89,6 +92,7 @@ public class PostRepository {
                         FROM Post p
                         JOIN FETCH p.user
                         JOIN FETCH p.car c
+                        LEFT JOIN FETCH c.brand
                         JOIN FETCH c.engine
                         JOIN FETCH p.photos
                         ORDER BY p.created DESC
@@ -97,20 +101,21 @@ public class PostRepository {
         );
     }
 
-    public List<Post> findAllByCarName(String carName) {
+    public List<Post> findAllByCarModel(String model) {
         return crudRepository.query(
                 """
                         SELECT DISTINCT p
                         FROM Post p
                         JOIN FETCH p.user
                         JOIN FETCH p.car c
+                        LEFT JOIN FETCH c.brand
                         JOIN FETCH c.engine
                         LEFT JOIN FETCH p.photos
-                        WHERE c.name = :name
+                        WHERE c.model = :model
                         ORDER BY p.created DESC
                         """,
                 Post.class,
-                Map.of("name", carName)
+                Map.of("model", model)
         );
     }
 }
