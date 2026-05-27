@@ -33,6 +33,7 @@ replay_pid*
 *.iml
 
 target
+files
 src/main/resources/static/files
 
 testdb.mv.db
