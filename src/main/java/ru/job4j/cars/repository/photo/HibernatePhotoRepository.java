@@ -1,4 +1,4 @@
-package ru.job4j.cars.repository;
+package ru.job4j.cars.repository.photo;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -10,10 +10,11 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class PhotoRepository {
+public class HibernatePhotoRepository implements PhotoRepository {
 
     private final CrudRepository crudRepository;
 
+    @Override
     public Optional<Photo> findById(int id) {
         return crudRepository.optional(
                 """

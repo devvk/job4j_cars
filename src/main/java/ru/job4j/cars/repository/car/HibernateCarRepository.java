@@ -1,4 +1,4 @@
-package ru.job4j.cars.repository;
+package ru.job4j.cars.repository.car;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -11,19 +11,22 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class CarRepository {
+public class HibernateCarRepository implements CarRepository {
 
     private final CrudRepository crudRepository;
 
+    @Override
     public Car create(Car car) {
         crudRepository.run(session -> session.persist(car));
         return car;
     }
 
+    @Override
     public void update(Car car) {
         crudRepository.run(session -> session.merge(car));
     }
 
+    @Override
     public void delete(Integer carId) {
         crudRepository.run(
                 """
@@ -34,6 +37,7 @@ public class CarRepository {
         );
     }
 
+    @Override
     public List<Car> findAllOrderById() {
         return crudRepository.query(
                 """
@@ -44,6 +48,7 @@ public class CarRepository {
         );
     }
 
+    @Override
     public Optional<Car> findById(Integer carId) {
         return crudRepository.optional(
                 """
@@ -58,6 +63,7 @@ public class CarRepository {
         );
     }
 
+    @Override
     public List<Car> findByEngineId(Integer engineId) {
         return crudRepository.query(
                 """

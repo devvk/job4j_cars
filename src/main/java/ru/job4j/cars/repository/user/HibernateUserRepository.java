@@ -1,4 +1,4 @@
-package ru.job4j.cars.repository;
+package ru.job4j.cars.repository.user;
 
 import lombok.AllArgsConstructor;
 import org.hibernate.HibernateException;
@@ -13,10 +13,11 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class UserRepository {
+public class HibernateUserRepository implements UserRepository {
 
     private final CrudRepository crudRepository;
 
+    @Override
     public Optional<User> save(User user) {
         try {
             crudRepository.run(session -> session.persist(user));
@@ -45,6 +46,7 @@ public class UserRepository {
      *
      * @param user пользователь.
      */
+    @Override
     public void update(User user) {
         crudRepository.run(session -> session.merge(user));
     }
@@ -54,6 +56,7 @@ public class UserRepository {
      *
      * @param userId ID
      */
+    @Override
     public void delete(Integer userId) {
         crudRepository.run(
                 "DELETE FROM User WHERE id = :id",
@@ -66,6 +69,7 @@ public class UserRepository {
      *
      * @return список пользователей.
      */
+    @Override
     public List<User> findAllOrderById() {
         return crudRepository.query("FROM User ORDER BY id", User.class);
     }
@@ -75,6 +79,7 @@ public class UserRepository {
      *
      * @return пользователь.
      */
+    @Override
     public Optional<User> findById(Integer userId) {
         return crudRepository.optional(
                 "FROM User WHERE id = :id", User.class,
@@ -87,6 +92,7 @@ public class UserRepository {
      * @param key key
      * @return список пользователей.
      */
+    @Override
     public List<User> findByLikeLogin(String key) {
         return crudRepository.query(
                 "FROM User WHERE login LIKE :key", User.class,
@@ -99,12 +105,14 @@ public class UserRepository {
      * @param login login.
      * @return Optional or user.
      */
+    @Override
     public Optional<User> findByLogin(String login) {
         return crudRepository.optional(
                 "FROM User WHERE login = :login", User.class,
                 Map.of("login", login));
     }
 
+    @Override
     public Optional<User> findByLoginAndPassword(String login, String password) {
         return crudRepository.optional(
                 "FROM User WHERE login = :login AND password = :password", User.class,

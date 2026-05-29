@@ -10,7 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.job4j.cars.model.Car;
 import ru.job4j.cars.model.Engine;
+import ru.job4j.cars.repository.car.CarRepository;
+import ru.job4j.cars.repository.car.HibernateCarRepository;
 import ru.job4j.cars.repository.command.CrudRepository;
+import ru.job4j.cars.repository.engine.EngineRepository;
+import ru.job4j.cars.repository.engine.HibernateEngineRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +35,8 @@ class CarRepositoryTest {
                 .buildMetadata()
                 .buildSessionFactory();
         crudRepository = new CrudRepository(sessionFactory);
-        carRepository = new CarRepository(crudRepository);
-        engineRepository = new EngineRepository(crudRepository);
+        carRepository = new HibernateCarRepository(crudRepository);
+        engineRepository = new HibernateEngineRepository(crudRepository);
     }
 
     @AfterAll

@@ -1,10 +1,7 @@
 package ru.job4j.cars.model;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -13,6 +10,8 @@ import java.io.Serializable;
 @Table(name = "users")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 public class User implements Serializable {

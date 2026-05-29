@@ -1,4 +1,4 @@
-package ru.job4j.cars.repository;
+package ru.job4j.cars.repository.post;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -12,19 +12,22 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class PostRepository {
+public class HibernatePostRepository implements PostRepository {
 
     private final CrudRepository crudRepository;
 
+    @Override
     public Post create(Post post) {
         crudRepository.run(session -> session.persist(post));
         return post;
     }
 
+    @Override
     public void update(Post post) {
         crudRepository.run(session -> session.merge(post));
     }
 
+    @Override
     public void delete(Integer postId) {
         crudRepository.run(session -> {
             var post = session.find(Post.class, postId);
@@ -34,6 +37,7 @@ public class PostRepository {
         });
     }
 
+    @Override
     public List<Post> findAllOrderedById() {
         return crudRepository.query(
                 """
@@ -50,6 +54,7 @@ public class PostRepository {
         );
     }
 
+    @Override
     public Optional<Post> findById(Integer postId) {
         return crudRepository.optional(
                 """
@@ -67,6 +72,7 @@ public class PostRepository {
         );
     }
 
+    @Override
     public List<Post> findAllCreatedLastDay() {
         return crudRepository.query(
                 """
@@ -85,6 +91,7 @@ public class PostRepository {
         );
     }
 
+    @Override
     public List<Post> findAllWithPhoto() {
         return crudRepository.query(
                 """
@@ -101,6 +108,7 @@ public class PostRepository {
         );
     }
 
+    @Override
     public List<Post> findAllByCarModel(String model) {
         return crudRepository.query(
                 """

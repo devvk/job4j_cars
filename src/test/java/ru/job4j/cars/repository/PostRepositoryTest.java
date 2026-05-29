@@ -12,7 +12,15 @@ import ru.job4j.cars.model.Car;
 import ru.job4j.cars.model.Engine;
 import ru.job4j.cars.model.Post;
 import ru.job4j.cars.model.User;
+import ru.job4j.cars.repository.car.CarRepository;
+import ru.job4j.cars.repository.car.HibernateCarRepository;
 import ru.job4j.cars.repository.command.CrudRepository;
+import ru.job4j.cars.repository.engine.EngineRepository;
+import ru.job4j.cars.repository.engine.HibernateEngineRepository;
+import ru.job4j.cars.repository.post.HibernatePostRepository;
+import ru.job4j.cars.repository.post.PostRepository;
+import ru.job4j.cars.repository.user.HibernateUserRepository;
+import ru.job4j.cars.repository.user.UserRepository;
 
 import java.time.LocalDateTime;
 
@@ -37,10 +45,10 @@ class PostRepositoryTest {
                 .buildMetadata()
                 .buildSessionFactory();
         crudRepository = new CrudRepository(sessionFactory);
-        postRepository = new PostRepository(crudRepository);
-        userRepository = new UserRepository(crudRepository);
-        carRepository = new CarRepository(crudRepository);
-        engineRepository = new EngineRepository(crudRepository);
+        postRepository = new HibernatePostRepository(crudRepository);
+        userRepository = new HibernateUserRepository(crudRepository);
+        carRepository = new HibernateCarRepository(crudRepository);
+        engineRepository = new HibernateEngineRepository(crudRepository);
     }
 
     @AfterAll

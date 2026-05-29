@@ -1,4 +1,4 @@
-package ru.job4j.cars.repository;
+package ru.job4j.cars.repository.brand;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -11,10 +11,11 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class BrandRepository {
+public class HibernateBrandRepository implements BrandRepository {
 
     private final CrudRepository crudRepository;
 
+    @Override
     public List<Brand> findAllOrderByName() {
         return crudRepository.query(
                 """
@@ -25,6 +26,7 @@ public class BrandRepository {
         );
     }
 
+    @Override
     public Optional<Brand> findById(Integer id) {
         return crudRepository.optional(
                 """

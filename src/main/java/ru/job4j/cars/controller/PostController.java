@@ -1,6 +1,7 @@
 package ru.job4j.cars.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -8,12 +9,13 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.job4j.cars.model.Car;
 import ru.job4j.cars.model.Post;
 import ru.job4j.cars.model.User;
-import ru.job4j.cars.service.BrandService;
-import ru.job4j.cars.service.EngineService;
-import ru.job4j.cars.service.PostService;
+import ru.job4j.cars.service.brand.BrandService;
+import ru.job4j.cars.service.engine.EngineService;
+import ru.job4j.cars.service.post.PostService;
 
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @AllArgsConstructor
 @RequestMapping("/posts")
@@ -24,20 +26,9 @@ public class PostController {
     private final EngineService engineService;
 
     @GetMapping
-    public String getAllPosts(Model model) {
-        model.addAttribute("posts", postService.findAllOrderedById());
-        return "posts/list";
-    }
-
-    @GetMapping("/today")
-    public String getPostsCreatedLastDay(Model model) {
-        model.addAttribute("posts", postService.findAllCreatedLastDay());
-        return "posts/list";
-    }
-
-    @GetMapping("/with-photo")
-    public String getPostsWithPhoto(Model model) {
-        model.addAttribute("posts", postService.findAllWithPhoto());
+    public String getPosts(@RequestParam(defaultValue = "all") String filter, Model model) {
+        model.addAttribute("posts", postService.findByFilter(filter));
+        model.addAttribute("filter", filter);
         return "posts/list";
     }
 
@@ -45,6 +36,7 @@ public class PostController {
     public String getPostById(@PathVariable int id, Model model) {
         Optional<Post> postOptional = postService.findById(id);
         if (postOptional.isEmpty()) {
+            log.warn("Post details page was requested, but post was not found. postId={}", id);
             model.addAttribute("error", "Объявление не найдено.");
             return "error/404";
         }
@@ -72,6 +64,8 @@ public class PostController {
         var brandOptional = brandService.findById(brandId);
         var engineOptional = engineService.findById(engineId);
         if (brandOptional.isEmpty() || engineOptional.isEmpty()) {
+            log.warn("Post was not created. Invalid brandId={} or engineId={}, userId={}",
+                    brandId, engineId, user.getId());
             model.addAttribute("error", "Выберите марку или двигатель!");
             model.addAttribute("brands", brandService.findAllOrderByName());
             model.addAttribute("engines", engineService.findAllOrderById());
@@ -89,12 +83,15 @@ public class PostController {
                               Model model) {
         Optional<Post> postOptional = postService.findById(id);
         if (postOptional.isEmpty()) {
+            log.warn("Post edit page was requested, but post was not found. postId={}, userId={}", id, user.getId());
             model.addAttribute("error", "Объявление не найдено.");
             return "error/404";
         }
 
         Post post = postOptional.get();
         if (!post.getUser().getId().equals(user.getId())) {
+            log.warn("Access denied to post edit page. postId={}, ownerId={}, userId={}",
+                    post.getId(), post.getUser().getId(), user.getId());
             model.addAttribute("error", "У вас нет прав на редактирование объявления.");
             return "error/404";
         }
@@ -113,11 +110,29 @@ public class PostController {
                            @RequestParam MultipartFile file,
                            @SessionAttribute User user,
                            Model model) {
-        Optional<Post> updatedPost = postService.update(id, post, brandId, engineId, file, user);
-        if (updatedPost.isEmpty()) {
-            model.addAttribute("error", "Объявление не найдено или у вас нет прав.");
+        Optional<Post> postOptional = postService.findById(id);
+        if (postOptional.isEmpty()) {
+            log.warn("Post update was requested, but post was not found. postId={}, userId={}", id, user.getId());
+            model.addAttribute("error", "Объявление не найдено.");
             return "error/404";
         }
+
+        Post existingPost = postOptional.get();
+        if (!existingPost.getUser().getId().equals(user.getId())) {
+            log.warn("Access denied to post update. postId={}, ownerId={}, userId={}",
+                    existingPost.getId(), existingPost.getUser().getId(), user.getId());
+            model.addAttribute("error", "У вас нет прав для редактирования объявления.");
+            return "error/404";
+        }
+
+        Optional<Post> updatedPost = postService.update(id, post, brandId, engineId, file, user);
+        if (updatedPost.isEmpty()) {
+            model.addAttribute("error", "Выберите марку или двигатель!");
+            model.addAttribute("brands", brandService.findAllOrderByName());
+            model.addAttribute("engines", engineService.findAllOrderById());
+            return "posts/edit";
+        }
+
         return "redirect:/posts/" + id;
     }
 
@@ -125,11 +140,22 @@ public class PostController {
     public String deletePost(@PathVariable int id,
                              @SessionAttribute User user,
                              Model model) {
-        boolean isDeleted = postService.deleteById(id, user);
-        if (!isDeleted) {
-            model.addAttribute("error", "Объявление не найдено или у вас нет прав.");
+        Optional<Post> postOptional = postService.findById(id);
+        if (postOptional.isEmpty()) {
+            log.warn("Post delete was requested, but post was not found. postId={}, userId={}", id, user.getId());
+            model.addAttribute("error", "Объявление не найдено.");
             return "error/404";
         }
+
+        Post post = postOptional.get();
+        if (!post.getUser().getId().equals(user.getId())) {
+            log.warn("Access denied to post delete. postId={}, ownerId={}, userId={}",
+                    post.getId(), post.getUser().getId(), user.getId());
+            model.addAttribute("error", "У вас нет прав для удаления объявления.");
+            return "error/404";
+        }
+
+        postService.deleteById(id, user);
         return "redirect:/posts";
     }
 
@@ -137,11 +163,22 @@ public class PostController {
     public String markAsSold(@PathVariable int id,
                              @SessionAttribute User user,
                              Model model) {
-        boolean isUpdated = postService.markAsSold(id, user);
-        if (!isUpdated) {
-            model.addAttribute("error", "Объявление не найдено или у вас нет прав.");
+        Optional<Post> postOptional = postService.findById(id);
+        if (postOptional.isEmpty()) {
+            log.warn("Post sold status update was requested, but post was not found. postId={}, userId={}", id, user.getId());
+            model.addAttribute("error", "Объявление не найдено.");
             return "error/404";
         }
+
+        Post post = postOptional.get();
+        if (!post.getUser().getId().equals(user.getId())) {
+            log.warn("Access denied to post sold status update. postId={}, ownerId={}, userId={}",
+                    post.getId(), post.getUser().getId(), user.getId());
+            model.addAttribute("error", "У вас нет прав для изменения статуса объявления.");
+            return "error/404";
+        }
+
+        postService.markAsSold(id, user);
         return "redirect:/posts/" + id;
     }
 }
