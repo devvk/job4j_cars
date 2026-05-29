@@ -209,6 +209,7 @@ class PostControllerTest {
     @Test
     void whenUpdatePostThenRedirectToPostDetails() {
         var post = createPost(1, user);
+        when(postService.findById(post.getId())).thenReturn(Optional.of(post));
         when(postService.update(post.getId(), post, brand.getId(), engine.getId(), testFile, user))
                 .thenReturn(Optional.of(post));
 
@@ -219,62 +220,105 @@ class PostControllerTest {
     }
 
     @Test
-    void whenUpdatePostFailedThenGetErrorPageWithMessage() {
+    void whenUpdatePostByWrongIdThenGetErrorPageWithMessage() {
         var post = createPost(1, user);
-        when(postService.update(post.getId(), post, brand.getId(), engine.getId(), testFile, user))
-                .thenReturn(Optional.empty());
+        when(postService.findById(post.getId())).thenReturn(Optional.empty());
 
         var model = new ConcurrentModel();
         var view = postController.editPost(post.getId(), post, brand.getId(), engine.getId(), testFile, user, model);
 
         assertThat(view).isEqualTo("error/404");
-        assertThat(model.getAttribute("error")).isEqualTo("Объявление не найдено или у вас нет прав.");
+        assertThat(model.getAttribute("error")).isEqualTo("Объявление не найдено.");
+    }
+
+    @Test
+    void whenUpdatePostByNotAuthorThenGetErrorPageWithMessage() {
+        var author = new User(1, "author", "password");
+        var anotherUser = new User(2, "another", "password");
+        var post = createPost(1, author);
+        when(postService.findById(post.getId())).thenReturn(Optional.of(post));
+
+        var model = new ConcurrentModel();
+        var view = postController.editPost(post.getId(), post, brand.getId(), engine.getId(), testFile, anotherUser, model);
+
+        assertThat(view).isEqualTo("error/404");
+        assertThat(model.getAttribute("error")).isEqualTo("У вас нет прав для редактирования объявления.");
     }
 
     @Test
     void whenDeletePostThenRedirectToPosts() {
-        int postId = 1;
-        when(postService.deleteById(postId, user)).thenReturn(true);
+        var post = createPost(1, user);
+        when(postService.findById(post.getId())).thenReturn(Optional.of(post));
+        when(postService.deleteById(post.getId(), user)).thenReturn(true);
 
         var model = new ConcurrentModel();
-        var view = postController.deletePost(postId, user, model);
+        var view = postController.deletePost(post.getId(), user, model);
 
         assertThat(view).isEqualTo("redirect:/posts");
     }
 
     @Test
-    void whenDeletePostFailedThenGetErrorPageWithMessage() {
+    void whenDeletePostByWrongIdThenGetErrorPageWithMessage() {
         int postId = 1;
-        when(postService.deleteById(postId, user)).thenReturn(false);
+        when(postService.findById(postId)).thenReturn(Optional.empty());
 
         var model = new ConcurrentModel();
         var view = postController.deletePost(postId, user, model);
 
         assertThat(view).isEqualTo("error/404");
-        assertThat(model.getAttribute("error")).isEqualTo("Объявление не найдено или у вас нет прав.");
+        assertThat(model.getAttribute("error")).isEqualTo("Объявление не найдено.");
+    }
+
+    @Test
+    void whenDeletePostByNotAuthorThenGetErrorPageWithMessage() {
+        var author = new User(1, "author", "password");
+        var anotherUser = new User(2, "another", "password");
+        var post = createPost(1, author);
+        when(postService.findById(post.getId())).thenReturn(Optional.of(post));
+
+        var model = new ConcurrentModel();
+        var view = postController.deletePost(post.getId(), anotherUser, model);
+
+        assertThat(view).isEqualTo("error/404");
+        assertThat(model.getAttribute("error")).isEqualTo("У вас нет прав для удаления объявления.");
     }
 
     @Test
     void whenMarkPostAsSoldThenRedirectToPostDetails() {
-        int postId = 1;
-        when(postService.markAsSold(postId, user)).thenReturn(true);
+        var post = createPost(1, user);
+        when(postService.findById(post.getId())).thenReturn(Optional.of(post));
+        when(postService.markAsSold(post.getId(), user)).thenReturn(true);
 
         var model = new ConcurrentModel();
-        var view = postController.markAsSold(postId, user, model);
+        var view = postController.markAsSold(post.getId(), user, model);
 
-        assertThat(view).isEqualTo("redirect:/posts/" + postId);
+        assertThat(view).isEqualTo("redirect:/posts/" + post.getId());
     }
 
     @Test
-    void whenMarkPostAsSoldFailedThenGetErrorPageWithMessage() {
+    void whenMarkPostAsSoldByWrongIdThenGetErrorPageWithMessage() {
         int postId = 1;
-        when(postService.markAsSold(postId, user)).thenReturn(false);
+        when(postService.findById(postId)).thenReturn(Optional.empty());
 
         var model = new ConcurrentModel();
         var view = postController.markAsSold(postId, user, model);
 
         assertThat(view).isEqualTo("error/404");
-        assertThat(model.getAttribute("error")).isEqualTo("Объявление не найдено или у вас нет прав.");
+        assertThat(model.getAttribute("error")).isEqualTo("Объявление не найдено.");
+    }
+
+    @Test
+    void whenMarkPostAsSoldByNotAuthorThenGetErrorPageWithMessage() {
+        var author = new User(1, "author", "password");
+        var anotherUser = new User(2, "another", "password");
+        var post = createPost(1, author);
+        when(postService.findById(post.getId())).thenReturn(Optional.of(post));
+
+        var model = new ConcurrentModel();
+        var view = postController.markAsSold(post.getId(), anotherUser, model);
+
+        assertThat(view).isEqualTo("error/404");
+        assertThat(model.getAttribute("error")).isEqualTo("У вас нет прав для изменения статуса объявления.");
     }
 
     private Post createPost(Integer id, User user) {
