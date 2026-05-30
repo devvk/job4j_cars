@@ -1,6 +1,7 @@
 package ru.job4j.cars.service.post;
 
 import org.springframework.web.multipart.MultipartFile;
+import ru.job4j.cars.dto.PostFilter;
 import ru.job4j.cars.model.Post;
 import ru.job4j.cars.model.User;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
 
 public interface PostService {
 
-    List<Post> findByFilter(String filter);
+    List<Post> findByFilter(PostFilter filter);
 
     Post create(Post post, User user, MultipartFile file);
 

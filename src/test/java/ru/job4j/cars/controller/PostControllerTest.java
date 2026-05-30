@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.web.multipart.MultipartFile;
+import ru.job4j.cars.dto.PostFilter;
 import ru.job4j.cars.model.*;
 import ru.job4j.cars.service.brand.BrandService;
 import ru.job4j.cars.service.brand.SimpleBrandService;
@@ -54,7 +55,7 @@ class PostControllerTest {
     @Test
     void whenRequestAllPostsThenGetListPageWithPosts() {
         var posts = List.of(createPost(1, user));
-        when(postService.findByFilter("all")).thenReturn(posts);
+        when(postService.findByFilter(PostFilter.ALL)).thenReturn(posts);
 
         var model = new ConcurrentModel();
         var view = postController.getPosts("all", model);
@@ -69,7 +70,7 @@ class PostControllerTest {
     @Test
     void whenRequestTodayPostsThenGetListPageWithPosts() {
         var posts = List.of(createPost(1, user));
-        when(postService.findByFilter("today")).thenReturn(posts);
+        when(postService.findByFilter(PostFilter.TODAY)).thenReturn(posts);
 
         var model = new ConcurrentModel();
         var view = postController.getPosts("today", model);
@@ -84,7 +85,7 @@ class PostControllerTest {
     @Test
     void whenRequestPostsWithPhotoThenGetListPageWithPosts() {
         var posts = List.of(createPost(1, user));
-        when(postService.findByFilter("with-photo")).thenReturn(posts);
+        when(postService.findByFilter(PostFilter.WITH_PHOTO)).thenReturn(posts);
 
         var model = new ConcurrentModel();
         var view = postController.getPosts("with-photo", model);

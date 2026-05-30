@@ -1,5 +1,6 @@
 package ru.job4j.cars.repository.post;
 
+import ru.job4j.cars.dto.PostFilter;
 import ru.job4j.cars.model.Post;
 
 import java.util.List;
@@ -13,13 +14,7 @@ public interface PostRepository {
 
     void delete(Integer id);
 
-    List<Post> findAllOrderedById();
-
     Optional<Post> findById(Integer id);
 
-    List<Post> findAllCreatedLastDay();
-
-    List<Post> findAllWithPhoto();
-
-    List<Post> findAllByCarModel(String model);
+    List<Post> findByFilter(PostFilter filter);
 }

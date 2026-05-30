@@ -75,6 +75,10 @@ public class CrudRepository {
         return transaction(command);
     }
 
+    public <T> T query(Function<Session, T> command) {
+        return transaction(command);
+    }
+
     public <T> Optional<T> optional(String query, Class<T> clazz, Map<String, Object> args) {
         Function<Session, Optional<T>> command = session -> {
             var sessionQuery = session.createQuery(query, clazz);

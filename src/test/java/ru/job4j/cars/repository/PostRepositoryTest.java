@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.job4j.cars.dto.PostFilter;
 import ru.job4j.cars.model.Car;
 import ru.job4j.cars.model.Engine;
 import ru.job4j.cars.model.Post;
@@ -102,10 +103,10 @@ class PostRepositoryTest {
     }
 
     @Test
-    void whenCreateSeveralThenFindAllOrderById() {
+    void whenFindByFilterAllThenReturnAllOrderedByIdDesc() {
         var post1 = postRepository.create(createPost("Mercedes", "Mercedes description"));
         var post2 = postRepository.create(createPost("BMW", "BMW description"));
-        var result = postRepository.findAllOrderedById();
+        var result = postRepository.findByFilter(PostFilter.ALL);
 
         assertThat(result)
                 .extracting(Post::getDescription)
@@ -132,14 +133,14 @@ class PostRepositoryTest {
     }
 
     @Test
-    void whenFindAllCreatedLastDayThenReturnOnlyNewPosts() {
+    void whenFindByFilterTodayThenReturnOnlyNewPosts() {
         var newPost = createPost("Mercedes", "Mercedes description");
         newPost.setCreated(LocalDateTime.now().minusHours(3));
         var oldPost = createPost("BMW", "BMW description");
         oldPost.setCreated(LocalDateTime.now().minusDays(2));
         postRepository.create(newPost);
         postRepository.create(oldPost);
-        var result = postRepository.findAllCreatedLastDay();
+        var result = postRepository.findByFilter(PostFilter.TODAY);
 
         assertThat(result)
                 .extracting(Post::getDescription)
@@ -147,27 +148,16 @@ class PostRepositoryTest {
     }
 
     @Test
-    void whenFindAllWithPhotoThenReturnOnlyPostsWithPhoto() {
+    void whenFindByFilterWithPhotoThenReturnOnlyPostsWithPhoto() {
         var postWithPhoto = postRepository.create(createPost("Mercedes", "Mercedes description"));
         createPhoto(postWithPhoto);
         postRepository.create(createPost("BMW", "BMW description"));
-        var result = postRepository.findAllWithPhoto();
+        var result = postRepository.findByFilter(PostFilter.WITH_PHOTO);
 
         assertThat(result)
                 .extracting(Post::getDescription)
                 .containsExactly(postWithPhoto.getDescription());
 
-    }
-
-    @Test
-    void whenFindAllByCarNameThenReturnOnlyPostsWithSameCarName() {
-        postRepository.create(createPost("Mercedes", "Mercedes description"));
-        var car = postRepository.create(createPost("BMW", "BMW description"));
-        var result = postRepository.findAllByCarModel("BMW");
-
-        assertThat(result)
-                .extracting(Post::getDescription)
-                .containsExactly(car.getDescription());
     }
 
     private Post createPost(String carName, String description) {

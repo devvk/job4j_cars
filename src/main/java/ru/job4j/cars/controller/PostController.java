@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.job4j.cars.dto.PostFilter;
 import ru.job4j.cars.model.Car;
 import ru.job4j.cars.model.Post;
 import ru.job4j.cars.model.User;
@@ -27,8 +28,9 @@ public class PostController {
 
     @GetMapping
     public String getPosts(@RequestParam(defaultValue = "all") String filter, Model model) {
-        model.addAttribute("posts", postService.findByFilter(filter));
-        model.addAttribute("filter", filter);
+        PostFilter postFilter = PostFilter.from(filter);
+        model.addAttribute("posts", postService.findByFilter(postFilter));
+        model.addAttribute("filter", postFilter.getValue());
         return "posts/list";
     }
 

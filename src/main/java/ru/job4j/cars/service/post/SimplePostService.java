@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.job4j.cars.dto.FileDto;
+import ru.job4j.cars.dto.PostFilter;
 import ru.job4j.cars.model.Car;
 import ru.job4j.cars.model.Photo;
 import ru.job4j.cars.model.Post;
@@ -136,12 +137,8 @@ public class SimplePostService implements PostService {
     }
 
     @Override
-    public List<Post> findByFilter(String filter) {
-        return switch (filter) {
-            case "today" -> postRepository.findAllCreatedLastDay();
-            case "with-photo" -> postRepository.findAllWithPhoto();
-            default -> postRepository.findAllOrderedById();
-        };
+    public List<Post> findByFilter(PostFilter filter) {
+        return postRepository.findByFilter(filter);
     }
 
     @Override
