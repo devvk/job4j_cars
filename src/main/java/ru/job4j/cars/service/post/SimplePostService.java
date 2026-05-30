@@ -6,14 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.job4j.cars.dto.FileDto;
 import ru.job4j.cars.dto.PostFilter;
-import ru.job4j.cars.model.Car;
-import ru.job4j.cars.model.Photo;
-import ru.job4j.cars.model.Post;
-import ru.job4j.cars.model.User;
+import ru.job4j.cars.model.*;
 import ru.job4j.cars.repository.car.HibernateCarRepository;
 import ru.job4j.cars.repository.post.HibernatePostRepository;
-import ru.job4j.cars.service.brand.SimpleBrandService;
-import ru.job4j.cars.service.engine.SimpleEngineService;
 import ru.job4j.cars.service.file.SimpleFileService;
 
 import java.io.IOException;
@@ -28,8 +23,6 @@ public class SimplePostService implements PostService {
 
     private final HibernatePostRepository postRepository;
     private final HibernateCarRepository carRepository;
-    private final SimpleBrandService brandService;
-    private final SimpleEngineService engineService;
     private final SimpleFileService fileService;
 
     @Override
@@ -51,24 +44,26 @@ public class SimplePostService implements PostService {
                                  Integer engineId,
                                  MultipartFile file,
                                  User user) {
-        Optional<Post> postOptional = findPostByIdAndUser(postId, user);
+        Optional<Post> postOptional = postRepository.findById(postId);
         if (postOptional.isEmpty()) {
-            log.warn("Post update failed. Post not found or access denied. postId={}, userId={}", postId, user.getId());
+            log.warn("Post update failed. Post not found. postId={}, userId={}", postId, user.getId());
             return Optional.empty();
         }
 
         Post post = postOptional.get();
-
-        var brandOptional = brandService.findById(brandId);
-        var engineOptional = engineService.findById(engineId);
-        if (brandOptional.isEmpty() || engineOptional.isEmpty()) {
-            log.warn("Post update failed. Invalid brandId={} or engineId={}, postId={}, userId={}",
-                    brandId, engineId, postId, user.getId());
+        if (!isOwner(post, user)) {
+            log.warn("Post update failed. Access denied. postId={}, ownerId={}, userId={}",
+                    postId, post.getUser().getId(), user.getId());
             return Optional.empty();
         }
+
+        Brand brand = new Brand();
+        brand.setId(brandId);
+        Engine engine = new Engine();
+        engine.setId(engineId);
         Car car = post.getCar();
-        car.setBrand(brandOptional.get());
-        car.setEngine(engineOptional.get());
+        car.setBrand(brand);
+        car.setEngine(engine);
         car.setModel(updatedPost.getCar().getModel());
         car.setBodyType(updatedPost.getCar().getBodyType());
 
@@ -104,14 +99,20 @@ public class SimplePostService implements PostService {
 
     @Override
     public boolean deleteById(int postId, User user) {
-        Optional<Post> postOptional = findPostByIdAndUser(postId, user);
+        Optional<Post> postOptional = postRepository.findById(postId);
         if (postOptional.isEmpty()) {
-            log.warn("Post delete failed. Post not found or access denied. postId={}, userId={}",
+            log.warn("Post delete failed. Post not found. postId={}, userId={}",
                     postId, user.getId());
             return false;
         }
 
         Post post = postOptional.get();
+        if (!isOwner(post, user)) {
+            log.warn("Post delete failed. Access denied. postId={}, ownerId={}, userId={}",
+                    postId, post.getUser().getId(), user.getId());
+            return false;
+        }
+
         Integer carId = post.getCar().getId();
         post.getPhotos().forEach(photo -> fileService.deleteByPath(photo.getPath()));
 
@@ -120,20 +121,8 @@ public class SimplePostService implements PostService {
         return true;
     }
 
-    private Optional<Post> findPostByIdAndUser(int postId, User user) {
-        Optional<Post> postOptional = postRepository.findById(postId);
-        if (postOptional.isEmpty()) {
-            log.warn("Post not found. postId={}", postId);
-            return Optional.empty();
-        }
-
-        Post post = postOptional.get();
-        if (!post.getUser().getId().equals(user.getId())) {
-            log.warn("Access denied to post. postId={}, ownerId={}, userId={}",
-                    postId, post.getUser().getId(), user.getId());
-            return Optional.empty();
-        }
-        return Optional.of(post);
+    private boolean isOwner(Post post, User user) {
+        return post.getUser().getId().equals(user.getId());
     }
 
     @Override
@@ -148,12 +137,20 @@ public class SimplePostService implements PostService {
 
     @Override
     public boolean markAsSold(int postId, User user) {
-        Optional<Post> postOptional = findPostByIdAndUser(postId, user);
+        Optional<Post> postOptional = postRepository.findById(postId);
         if (postOptional.isEmpty()) {
-            log.warn("Post not found. postId={}", postId);
+            log.warn("Post sold status update failed. Post not found. postId={}, userId={}",
+                    postId, user.getId());
             return false;
         }
+
         Post post = postOptional.get();
+        if (!isOwner(post, user)) {
+            log.warn("Post sold status update failed. Access denied. postId={}, ownerId={}, userId={}",
+                    postId, post.getUser().getId(), user.getId());
+            return false;
+        }
+
         post.setSold(true);
         postRepository.update(post);
         return true;

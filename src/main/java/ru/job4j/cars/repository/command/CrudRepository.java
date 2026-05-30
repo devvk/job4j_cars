@@ -47,9 +47,9 @@ public class CrudRepository {
         });
     }
 
-    public void run(String query, Map<String, Object> args) {
+    public void run(String hql, Map<String, Object> args) {
         Consumer<Session> command = session -> {
-            var sessionQuery = session.createMutationQuery(query);
+            var sessionQuery = session.createMutationQuery(hql);
             for (Map.Entry<String, Object> entry : args.entrySet()) {
                 sessionQuery.setParameter(entry.getKey(), entry.getValue());
             }
@@ -58,15 +58,15 @@ public class CrudRepository {
         run(command);
     }
 
-    public <T> List<T> query(String query, Class<T> clazz) {
+    public <T> List<T> query(String hql, Class<T> clazz) {
         Function<Session, List<T>> command = session ->
-                session.createQuery(query, clazz).list();
+                session.createQuery(hql, clazz).list();
         return transaction(command);
     }
 
-    public <T> List<T> query(String query, Class<T> clazz, Map<String, Object> args) {
+    public <T> List<T> query(String hql, Class<T> clazz, Map<String, Object> args) {
         Function<Session, List<T>> command = session -> {
-            var sessionQuery = session.createQuery(query, clazz);
+            var sessionQuery = session.createQuery(hql, clazz);
             for (Map.Entry<String, Object> entry : args.entrySet()) {
                 sessionQuery.setParameter(entry.getKey(), entry.getValue());
             }
@@ -79,9 +79,9 @@ public class CrudRepository {
         return transaction(command);
     }
 
-    public <T> Optional<T> optional(String query, Class<T> clazz, Map<String, Object> args) {
+    public <T> Optional<T> optional(String hql, Class<T> clazz, Map<String, Object> args) {
         Function<Session, Optional<T>> command = session -> {
-            var sessionQuery = session.createQuery(query, clazz);
+            var sessionQuery = session.createQuery(hql, clazz);
             for (Map.Entry<String, Object> entry : args.entrySet()) {
                 sessionQuery.setParameter(entry.getKey(), entry.getValue());
             }
